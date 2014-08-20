@@ -1,0 +1,47 @@
+{% load i18n %}
+<footer class="footer">
+    <div class="container-fluid">
+    {% block footer %}
+        <ul class="footer-links" >
+            <li>
+                <ul class="nav-collapse footer-list-01">
+                    <li><a href="/about/about_us">{% trans "About Us" %}</a></li>
+                    <li><a href="/about/terms_of_service">{% trans "Terms of Service" %}</a></li>
+                    <li><a href="/about/privacy_policy">{% trans "Privacy Policy" %}</a></li>
+                    <li><a href="/about/shopping_policy">{% trans "Shopping Policy" %}</a></li>
+                </ul>
+            </li>
+            <li>
+                <h3>{% trans "Contact us" %}</h3>
+                <p class="social-icons">
+                    <a href="https://www.facebook.com/mshwines"><i class="icon-facebook"></i></a>
+                    <a href="#"><i class="icon-twitter"></i></a>
+                </p>
+            </li>
+            <li style="display: inline-flex">
+                <p>
+                    {% trans "Showroom:" %} <br/> {% trans "17/F King Palace Plaza, 52A Sha Tsui Rd, Tsuen Wan, N.T.,HK" %} <br/>
+                    <strong><i class="icon-mobile"></i>{% trans "Tel: (852) 2838 8000" %}</strong>
+                    <strong><i class="icon-mobile"></i>{% trans "Fax: (852) 2838 8101" %}</strong>
+                </p>
+            </li>
+            <li style="display: inline-flex">
+                <p>
+                    {% trans "Celebrity Wines:" %} <br/> {% trans "Shop 10, G/F., Yee Fung Building, 35 & 35A Yau San Street, Yuen Long, N.T.,HK" %} <br/>
+                    <strong><i class="icon-mobile"></i>{% trans "Tel: (852) 2806 2618" %}</strong>
+                    <strong><i class="icon-mobile"></i>{% trans "Fax: (852) 2806 1628" %}</strong>
+                </p>
+            </li>
+        </ul>
+    {% endblock %}
+    </div>
+    <div class="footer-disclaimer">
+        <div class="container-fluid">
+            <a href="#" class="pull-right">{% trans "Copyright © 2014 Ming Sing Hong Wines Company Limited." %}</a>
+{#            <p class="hidden-phone">#}
+{#                <a href="https://www.verisign.com.au" title="https://www.verisign.com.au" target="_blank"><i class="verisign"></i></a>#}
+{#                <i class="credit-cards"></i>#}
+{#            </p>#}
+        </div>
+    </div>
+</footer>

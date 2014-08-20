@@ -1,0 +1,106 @@
+[
+    {
+        "pk": 1,
+        "model": "catalogue.productclass",
+        "fields": {
+            "track_stock": true,
+            "options": [],
+            "requires_shipping": true,
+            "name": "Wines",
+            "slug": "wines"
+        }
+    },
+    {
+        "pk": 1,
+        "model": "catalogue.productattribute",
+        "fields": {
+            "code": "Country",
+            "product_class": 1,
+            "option_group": null,
+            "required": false,
+            "type": "text",
+            "name": "Country"
+        }
+    },
+    {
+        "pk": 2,
+        "model": "catalogue.productattribute",
+        "fields": {
+            "code": "Region",
+            "product_class": 1,
+            "option_group": null,
+            "required": false,
+            "type": "text",
+            "name": "Region"
+        }
+    },
+    {
+        "pk": 3,
+        "model": "catalogue.productattribute",
+        "fields": {
+            "code": "Rating",
+            "product_class": 1,
+            "option_group": null,
+            "required": false,
+            "type": "text",
+            "name": "Rating"
+        }
+    },
+    {
+        "pk": 4,
+        "model": "catalogue.productattribute",
+        "fields": {
+            "code": "Type",
+            "product_class": 1,
+            "option_group": null,
+            "required": false,
+            "type": "text",
+            "name": "Type"
+        }
+    },
+    {
+        "pk": 5,
+        "model": "catalogue.productattribute",
+        "fields": {
+            "code": "Size",
+            "product_class": 1,
+            "option_group": null,
+            "required": false,
+            "type": "text",
+            "name": "Size"
+        }
+    },
+    {
+        "pk": 6,
+        "model": "catalogue.productattribute",
+        "fields": {
+            "code": "Classification",
+            "product_class": 1,
+            "option_group": null,
+            "required": false,
+            "type": "text",
+            "name": "Classification"
+        }
+    },
+    {
+        "pk": 7,
+        "model": "catalogue.productattribute",
+        "fields": {
+            "code": "Vintage",
+            "product_class": 1,
+            "option_group": null,
+            "required": false,
+            "type": "text",
+            "name": "Vintage"
+        }
+    },
+    {
+        "pk": 1,
+        "model": "partner.partner",
+        "fields": {
+            "code": "msh",
+            "name": "Ming Sing Hong",
+            "users": []
+        }
+    }
+]

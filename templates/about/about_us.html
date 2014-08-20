@@ -1,0 +1,28 @@
+{% extends "layout.html" %}
+{% load staticfiles %}
+{% load promotion_tags %}
+{% load i18n %}
+
+{% block body_class %}home-page{% endblock body_class %}
+
+{% block header %}
+{% endblock %}
+
+{% block page_promotions %}
+    <div class="container-fluid">
+        <p></p>
+        <h3>{% trans "About Us" %}</h3>
+        <div>
+            <p>
+                {% trans "Ming Sing Hong Wines Co. Ltd. was established in 2012, which is a subsidiary of Ming Sing Investments (Holdings) Co. Ltd. MSH specialize in importing quality wines of good pricing performance, providing services to both private and wholesale customers; professional wine storage service, wine tasting course, as well as wine future investment. Its high competitiveness enhanced its leading status in the industry." %}
+            </p>
+            <p>
+                {% trans "In order to provide the best one-stop exclusive wines experience for our guests, we established &ldquo;MSH&rdquo; wine club at the same time. The luxurious wine club is located at a 7000 square feet self-owned property operated by our professional and experienced team and it is on membership. There is a spacious showroom, thermostatic wine cellar, wine tasting room and more extensive services. With its comprehensive membership program, we aim at providing unique and comfortable wine tasting environment to every privileged member of &ldquo;MSH&rdquo; wine club, to share our love in wines." %}
+            </p>
+            <p>
+                {% trans "Welcome to join us at &ldquo;MSH&rdquo;, to experience the extraordinary world of quality wines." %}
+            </p>
+        </div>
+    </div>
+{% endblock %}
+                    

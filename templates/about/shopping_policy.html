@@ -1,0 +1,23 @@
+{% extends "layout.html" %}
+{% load staticfiles %}
+{% load promotion_tags %}
+{% load i18n %}
+
+{% block body_class %}home-page{% endblock body_class %}
+
+{% block header %}
+{% endblock %}
+
+{% block page_promotions %}
+    <div class="container-fluid">
+        <p></p>
+        <h3>{% trans "Shopping Policy" %}</h3>
+        <h4>{% trans "Terms and Conditions for Purchase:" %}</h4>
+        <div>
+            <p>
+                In these terms and conditions, the "Company" will mean MSH Wines and the "Customer" will mean any person, firm, company or body which places an order with the Company. Please read these terms and conditions carefully before using the site. By using the site or any part of it, you agree that you have read these terms and conditions and that you accept and agree to be bound by them.
+            </p>
+        </div>
+    </div>
+{% endblock %}
+                    
