@@ -38,6 +38,9 @@ urlpatterns = [
     # Club information
     url(r'^club/', include('apps.club.urls')),
 
+    # News information
+    url(r'^news/', include('apps.news.urls')),
+
     # Analytics information
     url(r'^status/', include('apps.status.urls')),
 

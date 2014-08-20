@@ -253,7 +253,8 @@ INSTALLED_APPS = [
     #'raven.contrib.django.raven_compat'
     'apps.about',
     'apps.club',
-    'apps.status'
+    'apps.status',
+    'apps.news'
 ]
 
 # South is only supported in Django < 1.7
@@ -267,7 +268,8 @@ if django.VERSION < (1, 7):
 from oscar import get_core_apps
 INSTALLED_APPS = INSTALLED_APPS + get_core_apps(
     ['apps.shipping',
-     'apps.order'])
+     'apps.order'
+    ])
 
 AUTHENTICATION_BACKENDS = (
     'oscar.apps.customer.auth_backends.EmailBackend',

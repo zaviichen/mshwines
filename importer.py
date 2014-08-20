@@ -3,84 +3,6 @@
 #
 
 import sqlite3
-import sys
-#
-# from apps.wine.crawler import WineModel
-#
-#
-# reload(sys)
-# sys.setdefaultencoding('utf8')
-#
-#
-# def import_dat_to_sqlite():
-#     conn = sqlite3.connect('wine.db')
-#     c = conn.cursor()
-#
-#     CREATE_TABLE = '''create table if not exists product (
-#       Id integer primary key,
-#       Name varchar(100),
-#       Code varchar (10),
-#       Country varchar(100),
-#       Region varchar (100),
-#       Rating varchar (20),
-#       Type varchar(20),
-#       Size integer null,
-#       Price double null,
-#       Stock integer null,
-#       Classification varchar(50) null,
-#       Vintage integer null,
-#       Description text null,
-#       Image varchar(100) null
-#     )'''
-#
-#     INSERT = 'insert into product (%s) values (%s)'
-#
-#     is_header = True
-#     columns = []
-#     sqls = []
-#
-#     for line in open('wines.dat', 'r'):
-#         if is_header:
-#             columns = line.strip().split('|')
-#             is_header = False
-#             INSERT = INSERT % (','.join(columns), ','.join(['?'] * len(columns)))
-#             continue
-#
-#         items = [unicode(e) for e in line.strip().split('|')]
-#         items = [e if e != '' else None for e in items]
-#         dic = dict(zip(columns, items))
-#         wine = WineModel(dic)
-#         try:
-#             wine.Id = int(wine.Id)
-#
-#             if wine.Size:
-#                 if wine.Size == 'Miniature':
-#                     wine.Size = 10
-#                 else:
-#                     wine.Size = int(wine.Size[:-2])
-#
-#             if wine.Stock:
-#                 wine.Stock = int(wine.Stock)
-#
-#             if wine.Vintage and wine.Vintage != 'NV':
-#                 wine.Vintage = int(wine.Vintage)
-#
-#             if wine.Price:
-#                 wine.Price = int(wine.Price[4:][:-2].replace(',', ''))
-#
-#             sqls.append(tuple(wine.__dict__.values()))
-#         except Exception, e:
-#             print e
-#             print wine.__dict__
-#             sys.exit(1)
-#
-#     c.execute(CREATE_TABLE)
-#     c.execute('delete from product')
-#     c.executemany(INSERT, sqls)
-#     conn.commit()
-#     conn.close()
-#
-
 import os
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "settings")
 
@@ -106,24 +28,30 @@ class WineSiteImporter(object):
     """
 
     def __init__(self):
-        pass
+        self.conn = sqlite3.connect('fixtures/wine.db')
+        self.c = self.conn.cursor()
+        self.small_categories = []
+        self.small_regions = []
+
+    def analyze_category(self):
+        sql = 'select Country, count(*) as cnt from product group by Country having cnt < 10'
+        self.c.execute(sql)
+        self.small_categories = [cols[0] for cols in self.c.fetchall()]
+
+        sql = 'select Region, count(*) as cnt from product group by Region having cnt < 5'
+        self.c.execute(sql)
+        self.small_regions = [cols[0] for cols in self.c.fetchall()]
 
     def handle(self, product_class_name):
+        self.analyze_category()
         product_class = ProductClass.objects.get(
             name=product_class_name)
 
-        conn = sqlite3.connect('fixtures/wine.db')
-        c = conn.cursor()
-
-        c.execute('select * from product')
-        cnt = 0
-        for cols in c.fetchall():
-            cnt += 1
+        self.c.execute('select * from product')
+        for cols in self.c.fetchall():
             print cols
             try:
                 self.create_product(product_class, cols)
-                # if cnt == 10:
-                #     break
             except Exception, e:
                 print cols
                 print e
@@ -134,7 +62,16 @@ class WineSiteImporter(object):
         partner = 'msh'
         price = cols[8]
         stock = cols[9]
-        category = 'Wines > %s > %s' % (cols[3], cols[4])
+
+        country = cols[3]
+        region = cols[4]
+        if country in self.small_categories:
+            category = 'Wines > Others'
+        else:
+            if region in self.small_regions:
+                category = 'Wines > %s > Others' % country
+            else:
+                category = 'Wines > %s > %s' % (country, region)
 
         if upc:
             try:
@@ -189,16 +126,5 @@ class WineSiteImporter(object):
 
 
 if __name__ == '__main__':
-    print '=====> load json'
-    os.system('python manage.py loaddata fixtures/wine-products.json ')
-
-    print '=====> import wines'
     importer = WineSiteImporter()
     importer.handle('Wines')
-
-    print '=====> import images'
-    os.system('python manage.py oscar_import_catalogue_images fixtures/wineimg/')
-
-    print '=====> update index'
-    os.system('python manage.py clear_index --noinput')
-    os.system('python manage.py update_index catalogue')

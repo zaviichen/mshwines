@@ -2,11 +2,10 @@ from django.utils.http import urlquote
 from django.conf import settings
 from django.http import HttpResponsePermanentRedirect
 from django.shortcuts import get_object_or_404
-from django.views.generic import ListView, DetailView
+from django.views.generic import ListView
 from django.utils.translation import ugettext_lazy as _
 
 from oscar.core.loading import get_class, get_model
-from oscar.apps.catalogue.signals import product_viewed
 
 Product = get_model('catalogue', 'product')
 ProductReview = get_model('reviews', 'ProductReview')
@@ -14,108 +13,11 @@ Category = get_model('catalogue', 'category')
 ProductAlert = get_model('customer', 'ProductAlert')
 ProductAlertForm = get_class('customer.forms', 'ProductAlertForm')
 
-ProductImage = get_model('catalogue', 'ProductImage')
-
-
-class ProductDetailView(DetailView):
-    context_object_name = 'product'
-    model = Product
-    view_signal = product_viewed
-    template_folder = "catalogue"
-
-    # Whether to redirect to the URL with the right path
-    enforce_paths = True
-
-    # Whether to redirect child products to their parent's URL
-    enforce_parent = True
-
-
-    def get(self, request, **kwargs):
-        """
-        Ensures that the correct URL is used before rendering a response
-        """
-        self.object = product = self.get_object()
-
-        redirect = self.redirect_if_necessary(request.path, product)
-        if redirect is not None:
-            return redirect
-
-        response = super(ProductDetailView, self).get(request, **kwargs)
-        self.send_signal(request, response, product)
-        return response
-
-    def get_object(self, queryset=None):
-        # Check if self.object is already set to prevent unnecessary DB calls
-        if hasattr(self, 'object'):
-            return self.object
-        else:
-            return super(ProductDetailView, self).get_object(queryset)
-
-    def redirect_if_necessary(self, current_path, product):
-        if self.enforce_parent and product.is_child:
-            return HttpResponsePermanentRedirect(
-                product.parent.get_absolute_url())
-
-        if self.enforce_paths:
-            expected_path = product.get_absolute_url()
-            if expected_path != urlquote(current_path):
-                return HttpResponsePermanentRedirect(expected_path)
-
-    def get_context_data(self, **kwargs):
-        ctx = super(ProductDetailView, self).get_context_data(**kwargs)
-        ctx['reviews'] = self.get_reviews()
-        ctx['alert_form'] = self.get_alert_form()
-        ctx['has_active_alert'] = self.get_alert_status()
-        return ctx
-
-    def get_alert_status(self):
-        # Check if this user already have an alert for this product
-        has_alert = False
-        if self.request.user.is_authenticated():
-            alerts = ProductAlert.objects.filter(
-                product=self.object, user=self.request.user,
-                status=ProductAlert.ACTIVE)
-            has_alert = alerts.exists()
-        return has_alert
-
-    def get_alert_form(self):
-        return ProductAlertForm(
-            user=self.request.user, product=self.object)
-
-    def get_reviews(self):
-        return self.object.reviews.filter(status=ProductReview.APPROVED)
-
-    def send_signal(self, request, response, product):
-        self.view_signal.send(
-            sender=self, product=product, user=request.user, request=request,
-            response=response)
-
-    def get_template_names(self):
-        """
-        Return a list of possible templates.
-
-        If an overriding class sets a template name, we use that. Otherwise,
-        we try 2 options before defaulting to catalogue/detail.html:
-            1). detail-for-upc-<upc>.html
-            2). detail-for-class-<classname>.html
-
-        This allows alternative templates to be provided for a per-product
-        and a per-item-class basis.
-        """
-        if self.template_name:
-            return [self.template_name]
-
-        return [
-            '%s/detail-for-upc-%s.html' % (
-                self.template_folder, self.object.upc),
-            '%s/detail-for-class-%s.html' % (
-                self.template_folder, self.object.get_product_class().slug),
-            '%s/detail.html' % (self.template_folder)]
-
 
 class ProductCategoryView(ListView):
     """
     Browse products in a given category
+    Override the oscar's catalogue reviews, use our own rank method.
     """
     context_object_name = "products"
     template_name = 'catalogue/browse.html'
@@ -172,6 +74,9 @@ class ProductCategoryView(ListView):
         return context
 
     def get_queryset(self):
+        """
+        It will depress the product which doesn't have image or is unavailable.
+        """
         qs = Product.browsable.base_queryset()
         if self.category is not None:
             categories = self.get_categories()
