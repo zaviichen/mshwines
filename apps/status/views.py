@@ -56,5 +56,5 @@ class RecentProductView(ListView):
     def get_queryset(self):
         qs = Product.browsable.base_queryset()
         dt = datetime.date.today() - datetime.timedelta(days=30)
-        qs = qs.filter(date_created__gte=dt).order_by('-date_created')
+        qs = qs.filter(date_created__gte=dt).order_by('-images', '-stockrecords', '-date_created')
         return qs
